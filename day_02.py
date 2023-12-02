@@ -105,28 +105,24 @@ Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red
 Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
 Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green"""
 
-sum=0
-pwrsum=0
+sum_a = 0
+sum_b = 0
 for game in games.splitlines():
-    name,grabs = game.split(":")
+    name, grabs = game.split(":")
     num = int(name.lstrip("Game "))
     grabs = list(map(str.strip, grabs.split(";")))
-    #print(f"--------{num}-------------")
-
     colors = {}
     for g in grabs:
         blocks = list(map(str.strip, g.split(",")))
-        #print(blocks)
         for b in blocks:
-            number,color = b.split(" ")
+            number, color = b.split(" ")
             if color not in colors:
-                colors[color]=0
-            if int(number)>colors[color]:
+                colors[color] = 0
+            if int(number) > colors[color]:
                 colors[color] = int(number)
-    pwrsum += colors["red"]*colors["blue"]*colors["green"]
+    sum_b += colors["red"] * colors["blue"] * colors["green"]
+    if colors["red"] <= 12 and colors["green"] <= 13 and colors["blue"] <= 14:
+        sum_a += num
+print("part A:", sum_a)
+print("part B:", sum_b)
 
-    if colors["red"]<=12 and colors["green"]<=13 and colors["blue"]<=14:
-        sum+=num
-        print(num)
-print(sum)
-print(pwrsum)

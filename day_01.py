@@ -999,6 +999,8 @@ sjv8
 ncqpkzh5twooneoneqfxlqbjjhqsrlkhvdnvtbzpcbj
 449three45three"""
 
+sum_a = 0
+sum_b = 0
 
 
 def replace_all(text, dic):
@@ -1007,17 +1009,22 @@ def replace_all(text, dic):
     return text
 
 
-sum = 0
-for line in sample.splitlines():
-    dic = {"oneight":"18","threeight":"38","nineeight":"98", #ending with E
-           "eightwo":"82","eighthree":"83", #ending with T
-           "twone":"21",#ending with o
-           "one": "1", "two": "2", "three": "3", "four": "4", "five": "5", "six": "6", "seven": "7", "eight": "8",
-           "nine": "9"}
-    line = replace_all(line, dic)
+def getnumbers(line, sum):
     l = list(line)
     digits = list(filter(str.isdigit, l))
-    val = int(digits[0]) * 10 + int(digits[-1])
-    print(line, val)
+    val = int(digits[0] + digits[-1])
     sum += val
-print(sum)
+    return sum
+
+
+for line in sample.splitlines():
+    dic = {"oneight": "18", "threeight": "38", "nineeight": "98",  # ending with E
+           "eightwo": "82", "eighthree": "83",  # ending with T
+           "twone": "21",  # ending with o
+           "one": "1", "two": "2", "three": "3", "four": "4", "five": "5", "six": "6", "seven": "7", "eight": "8",
+           "nine": "9"}
+    sum_a = getnumbers(line, sum_a)
+    line = replace_all(line, dic)
+    sum_b = getnumbers(line, sum_b)
+print("part A:", sum_a)
+print("part B:", sum_b)
