@@ -1,8 +1,8 @@
 from itertools import cycle
+import math
+route = "LRLRRRLRLLRRLRLRRRLRLRRLRRLLRLRRLRRLRRRLRRRLRLRRRLRLRRLRRLLRLRLLLLLRLRLRRLLRRRLLLRLLLRRLLLLLRLLLRLRRLRRLRRRLRRRLRRLRRLRRRLRLRLRRLRLRLRLRRLRRRLLRLLRRLRLRRRLRLRRRLRLRRRLRRRLRRLRLLLLRLRRRLRLRRLRLRRLRRLRRLLRRRLLLLLLRLRRRLRRLLRRRLRRLLLRLRLRLRRRLRRLRLRRRLRRLRRRLLRRLRRLLLRRRR"
 
-route="LRLRRRLRLLRRLRLRRRLRLRRLRRLLRLRRLRRLRRRLRRRLRLRRRLRLRRLRRLLRLRLLLLLRLRLRRLLRRRLLLRLLLRRLLLLLRLLLRLRRLRRLRRRLRRRLRRLRRLRRRLRLRLRRLRLRLRLRRLRRRLLRLLRRLRLRRRLRLRRRLRLRRRLRRRLRRLRLLLLRLRRRLRLRRLRLRRLRRLRRLLRRRLLLLLLRLRRRLRRLLRRRLRRLLLRLRLRLRRRLRRLRLRRRLRRLRRRLLRRLRRLLLRRRR"
-
-maps="""QSF = (JQX, GGN)
+maps = """QSF = (JQX, GGN)
 VBT = (XTD, KGR)
 SMK = (SNK, LBX)
 LSJ = (JMQ, TJJ)
@@ -779,13 +779,14 @@ HLT = (GFM, CGL)"""
 
 mapping = {}
 for i in maps.splitlines():
-    k,v=i.split("=")
-    l,r=v.split(",")
-    mapping[k.strip()]=(l.strip(" (()"),r.strip(") "))
+    k, v = i.split("=")
+    l, r = v.split(",")
+    mapping[k.strip()] = (l.strip(" ("), r.strip(") "))
+
 
 def routing(start):
     current = start
-    steps=0
+    steps = 0
     pool = cycle(list(route))
     for item in pool:
         steps += 1
@@ -793,15 +794,12 @@ def routing(start):
             current = mapping[current][0]
         else:
             current = mapping[current][1]
-        if current[2]=="Z":
-                return steps
+        if current[2] == "Z":
+            return steps
 
-print("Part A",routing("AAA"))
 
-current = list(filter(lambda x:x[2]=="A",mapping))
+print("Part A", routing("AAA"))
+current = list(filter(lambda x: x[2] == "A", mapping))
 steps = [routing(i) for i in current]
-print("part B",steps)
-#now use excel to find the lcm
-
-
+print("part B", math.lcm(*steps))
 
