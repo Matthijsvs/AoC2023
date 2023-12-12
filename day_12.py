@@ -1006,70 +1006,40 @@ sample = """???.### 1,1,3
 ?###???????? 3,2,1"""
 
 
-def compare(generated, orig):
-    # print(f"[{generated} \t= {orig}]")
-    if len(generated) > (len(orig) + 1):
-        return False
-    generated = generated.ljust(len(orig), ".")
-    for i in range(len(orig)):
-        if orig[i] == "." and generated[i] == "#":
-            return False
-        elif orig[i] == "#" and generated[i] == ".":
-            return False
-    print(generated)
-    return True
-
-
-def opts2(s, groups):
-    print(f"-----------------\n{s} {groups}")
-    broken_springs = sum(groups) + len(groups) - 2  # each broken spring is separated by 1 working
-    working_springs = len(s) - broken_springs
-
-    z = []
-    for i in range(working_springs + 1):
-        z.append(f"{i}")
-    while len(z[0]) < len(groups):
-        q = []
-        for i in range(working_springs + 1):
-            for j in z:
-                q.append(f"{i}{j}")
-        z = q
-
-    # print(z)
-    t = ""
-    sum_a = 0
-    for j in z:
-        q = [int(x) for x in j]
-        t = ""
-        for i in range(len(groups)):
-            t += "." * q[i]
-            t += "#" * groups[i]
-            t += "."
-        if compare(t, s):
-            sum_a += 1
-    return sum_a
-
-
-def fit(st, groups):
-    #print("")
+def fit2(st, groups):
+    print("")
     ans = 0
-    if len(groups) > 0 and len(st)>0:
-        itm = groups.pop(0)
-        #print(f"space has room: {st[0]} = {len(st[0])}, itm = {itm}, todo={groups}")
-        for i in range(len(st[0])-itm+1):
-            print(f"place \"{itm}\" in {st[0]}, start at {i}")
-            if itm+i<=len(st[0]): # this block fits
-                print("fitted,",end='')
-                if itm+i+1 < len(st[0]) and st[0][-1]!="#": #more might fit
-                    print("room left")
+    if len(groups) > 0 and len(st) > 0:
+        itm = groups.pop(0)  # the item that should fit into the text
+        print(f"space {st[0]} has room:  {len(st[0])}, itm = {itm}, todo={groups}")
+        while len(st[0]) < itm and len(st) > 1:
+            st.pop(0)
+            print(f"space has room: {st[0]} = {len(st[0])}, itm = {itm}, todo={groups}")
+        for i in range(len(st[0]) - itm + 1):
+            # print(f"place \"{itm}\" in {st[0]}, start at {i}")
+            if itm + i <= len(st[0]):  # this block fits
+                # print("fitted,", end='')
+                if itm + i + 1 < len(st[0]) and st[0][itm + i] != "#":  # more might fit
+                    # print("room left")
                     p = st.copy()
-                    p[0]=p[0][i+itm+1:]
-                    print(f"new list={p}")
+                    p[0] = p[0][i + itm + 1:]
+                    # print(f"new list={p}")
+                    if len(groups) == 0:
+                        print("done", p)
+                        for i in p:
+                            if "#" in i:
+                                return 0
+                        return 1
                     ans += fit(p, groups.copy())
                 else:
                     print("room full")
-                    if len(groups)==0:
-                        print("done")
+                    if len(groups) == 0:
+                        p = st.copy()
+                        p[0] = p[0][i + itm + 1:]
+                        print("done", p)
+                        for i in p:
+                            if "#" in i:
+                                return 0
                         return 1
                     else:
                         ans += fit(st[1:].copy(), groups.copy())
@@ -1081,18 +1051,33 @@ def fit(st, groups):
         return ans
 
 
-def opts(st: str, groups: list):
-    #print(f"-----------------\n{st} {groups}")
-    spaces = list(filter(None, st.split(".")))
-    #print(spaces)
-    b = fit(spaces, groups)
-    print(b)
-    return b
+def fit(st, groups):
+    if len(st) == 0 and len(groups) > 0:
+        return 0  # no space left
+    elif len(groups) == 0:
+        for i in st:
+            if "#" in i:
+                return 0  # invalid route, there is a spot where a spring should have been
+        return 1  # valid route
+    else:
+        ans = 0
+        itm = groups[0]  # the item that should fit into the text
+        print(f"space {st[0]} has room:  {len(st[0])}, itm = {itm}, todo={groups}")
+        if itm<len(st[0]): #too small:
+            ans += fit(st[1:].copy(), groups.copy())
+        else:
+            itm=groups.pop(0)
+            for i in range(len(st[0]) - itm + 1):
+                print(" "*i+"#"*itm)
+                p = st.copy()
+                p[0] = p[0][i + itm + 1:]
+        return ans
 
 
 sum_a = 0
-for i in sample.splitlines()[-1:]:
-    condition, groupstring = i.split()
-    groups = [int(x) for x in groupstring.split(",")]
-    sum_a += opts(condition, groups)
+for i in sample.splitlines():
+    condition, group_string = i.split()
+    group_list = [int(x) for x in group_string.split(",")]
+    spaces = list(filter(None, condition.split(".")))  # remove empties
+    sum_a += fit(spaces, group_list)
 print(sum_a)
