@@ -1006,52 +1006,10 @@ sample = """???.### 1,1,3
 ?###???????? 3,2,1"""
 
 
-def fit2(st, groups):
-    print("")
-    ans = 0
-    if len(groups) > 0 and len(st) > 0:
-        itm = groups.pop(0)  # the item that should fit into the text
-        print(f"space {st[0]} has room:  {len(st[0])}, itm = {itm}, todo={groups}")
-        while len(st[0]) < itm and len(st) > 1:
-            st.pop(0)
-            print(f"space has room: {st[0]} = {len(st[0])}, itm = {itm}, todo={groups}")
-        for i in range(len(st[0]) - itm + 1):
-            # print(f"place \"{itm}\" in {st[0]}, start at {i}")
-            if itm + i <= len(st[0]):  # this block fits
-                # print("fitted,", end='')
-                if itm + i + 1 < len(st[0]) and st[0][itm + i] != "#":  # more might fit
-                    # print("room left")
-                    p = st.copy()
-                    p[0] = p[0][i + itm + 1:]
-                    # print(f"new list={p}")
-                    if len(groups) == 0:
-                        print("done", p)
-                        for i in p:
-                            if "#" in i:
-                                return 0
-                        return 1
-                    ans += fit(p, groups.copy())
-                else:
-                    print("room full")
-                    if len(groups) == 0:
-                        p = st.copy()
-                        p[0] = p[0][i + itm + 1:]
-                        print("done", p)
-                        for i in p:
-                            if "#" in i:
-                                return 0
-                        return 1
-                    else:
-                        ans += fit(st[1:].copy(), groups.copy())
-            else:
-                print("does not fit")
-                return ans
-        return ans
-    else:
-        return ans
 
 
-def fit(st, groups):
+
+def fit(st, groups, t=""):
     if len(st) == 0 and len(groups) > 0:
         return 0  # no space left
     elif len(groups) == 0:
@@ -1062,20 +1020,20 @@ def fit(st, groups):
     else:
         ans = 0
         itm = groups[0]  # the item that should fit into the text
-        print(f"space {st[0]} has room:  {len(st[0])}, itm = {itm}, todo={groups}")
-        if itm<len(st[0]): #too small:
-            ans += fit(st[1:].copy(), groups.copy())
-        else:
-            itm=groups.pop(0)
-            for i in range(len(st[0]) - itm + 1):
-                print(" "*i+"#"*itm)
+        if st[0].count("#")==0:  # skip this place in case
+            ans += fit(st[1:].copy(), groups.copy(), t+"_")
+        itm = groups.pop(0)
+        for i in range(len(st[0]) - itm + 1): #try to fit item in all spots
+            q = st[0][:i] + st[0][i + itm+0:i + itm + 1]
+            if q.count("#") == 0: #no springs before or after item
                 p = st.copy()
                 p[0] = p[0][i + itm + 1:]
+                ans += fit(p.copy(), groups.copy(), t + "." * (i+1) + "#" * itm)
         return ans
 
 
 sum_a = 0
-for i in sample.splitlines():
+for i in inp.splitlines():
     condition, group_string = i.split()
     group_list = [int(x) for x in group_string.split(",")]
     spaces = list(filter(None, condition.split(".")))  # remove empties
