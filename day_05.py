@@ -250,6 +250,7 @@ class Converter():
             out, inp, rang = i
             if inp <= val <= inp + rang:
                 return out + (val - inp)
+        print("not found!")
         return val
 
     def chain(self, converter):
@@ -258,7 +259,9 @@ class Converter():
     def translate(self, input):
         #print(f"level {self.level}:{input}")
         if self.downstream is None:  # last in chain
-            return self.find(input)
+            ans=self.find(input)
+            print(f"done!:{ans}")
+            return ans
         else:
             return self.downstream.translate(self.find(input))
 
@@ -277,6 +280,7 @@ for line in maps.splitlines():
 
 out_a = []
 for i in seeds.split():
+    print(i)
     out_a.append(master.translate(int(i)))
 print(min(out_a))
 
