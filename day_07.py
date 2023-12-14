@@ -1043,14 +1043,11 @@ class Card():
         elif self.strength == other.strength:
             pos = ["A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2"]
             for i in range(5):
-                #print(self.card,other.card,self.card[i],pos.index(self.card[i]))
                 if pos.index(self.card[i]) > pos.index(other.card[i]):
                     return True
                 elif pos.index(self.card[i]) < pos.index(other.card[i]):
                     return False
-        #print(self,other)
         raise IOError
-        # return self.strength < other.strength
 
     def __repr__(self):
         dic = {7: "5K", 6: "4K", 5: "FH", 4: "3K", 3: "2P", 2: "1P", 1: "HC"}
@@ -1064,6 +1061,5 @@ l.sort()  # highest card last
 sum_a=0
 for i in range(len(l)):
     v=l[i].bid * (i + 1)
-    print(i, l[i],l[i].bid, v)
     sum_a+=v
-print(sum_a)
+print("part A",sum_a)

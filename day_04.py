@@ -230,7 +230,7 @@ for card in games.splitlines():
     for i in range(num,num+found):
         card_count[i]+=card_count[num-1]
     #print(card_count)
-    print(f"card {num}. have {card_count[num-1]} of this card. {found} number match, {int(2 ** (found - 1))} points")
+    #print(f"card {num}. have {card_count[num-1]} of this card. {found} number match, {int(2 ** (found - 1))} points")
     sum_b=sum(card_count)
 
 print("part A:", sum_a)
