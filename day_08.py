@@ -785,21 +785,21 @@ for i in maps.splitlines():
 
 
 def routing(start):
-    current = start
+    next_position = start
     steps = 0
     pool = cycle(list(route))
     for item in pool:
         steps += 1
         if item == "L":
-            current = mapping[current][0]
+            next_position = mapping[next_position][0]
         else:
-            current = mapping[current][1]
-        if current[2] == "Z":
+            next_position = mapping[next_position][1]
+        if next_position[-1] == "Z":
             return steps
 
 
-print("Part A", routing("AAA"))
-current = list(filter(lambda x: x[2] == "A", mapping))
-steps = [routing(i) for i in current]
+print("part A", routing("AAA"))
+start_points = list(filter(lambda x: x[-1] == "A", mapping))
+steps = [routing(i) for i in start_points]
 print("part B", math.lcm(*steps))
 

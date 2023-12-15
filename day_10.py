@@ -173,10 +173,9 @@ for y in range(len(grid)):
         if c == "S":
             startx = x
             starty = y
-            #print(f"start at {x},{y}")
             steps = 0
             c = "?"
-            while c != "S":
+            while c != "S":     #loop until we're back
                 steps += 1
                 directions = [(1, 0),  #0 east
                               (0, 1),  #1 south
@@ -199,17 +198,7 @@ for y in range(len(grid)):
                     next_step = newdir[c][dir]
                     x = xa
                     y = ya
-                    if False and c in outside:
-                        print(outside[c],dir)
-                        for i in outside[c][dir]:
-                            print(c, i, directions[i])
-                            xb = x + directions[i][0]
-                            yb = y + directions[i][1]
-                            if colors[yb][xb] != "x":
-                                colors[yb][xb] = "O"
                     dir = next_step
-                    continue
-                #back at start position:
                 elif c == "S":
                     sum_a = steps // 4
                 else:

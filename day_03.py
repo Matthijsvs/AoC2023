@@ -163,7 +163,7 @@ def getpartno(x, y):
         if num.isdigit():
             partno.append(getWholeNum(x + a, y + b))
     partno = set(partno)
-    print(partno)
+    #print(partno)
     global sum_a, sum_b
     for i in partno:
         sum_a += i
@@ -192,7 +192,7 @@ for y in range(len(grid)):
     for x in range(len(grid[y])):
         c = grid[y][x]
         if c != "." and not c.isdigit():
-            print(f"part {c} at {x},{y}")
+            #print(f"part {c} at {x},{y}")
             getpartno(x, y)
 print("part A:", sum_a)
 print("part B:", sum_b)
