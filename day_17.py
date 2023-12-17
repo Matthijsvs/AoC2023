@@ -1,3 +1,5 @@
+import copy
+
 t = """211332313114143133434324222211434511424134345413413656654231245423216434424452613141163242122214533442323255355354312412122214412112342123223
 212132234434344413224223425412235542511125134445554136543213263136623362163641265326312152424545214412311153541215242114423212142423234121313
 312213432321414114421421534422141235341514243544323331644633255352613264125144313663652436641115123244235341524131322551432111124121424141133
@@ -155,57 +157,56 @@ t = """2413432311323
 4322674655533"""
 
 maze = []
+empty = []
 for i in t.splitlines():
     maze.append([int(x) for x in i])
+    empty.append([0 for x in i])
 
-x = len(maze[0])
-y = len(maze)
-start = (0, 0)
-end = (x - 1, y - 1)
-empty = [[0 for i in range(x)] for i in range(y)]
+N = (0, -1)
+NE = (1, -1)
+E = (1, 0)
+SE = (1, 1)
+S = (0, 1)
+SW = (-1, 1)
+W = (-1, 0)
+NW = (-1, -1)
+STAY = (0, 0)
+moves = [N, E, S, W]
 
-print(start, end)
-route = [[0 for i in range(x)] for i in range(y)]
-
-
-def calc(node, path, lastdir=0, counting=0):
-    x, y = node
-    dirs = [(x - 1, y), (x, y - 1), (x, y + 1), (x + 1, y)]
-    r = ["<", "^", "v", ">"]
-    if y < 0 or x < 0 or x >= len(grid[0]) or y >= len(grid) or counting > 2:  # outside grid
-        return
-    val = maze[y][x] + path
-    if grid[y][x] == 0 or (grid[y][x]>val):
-        grid[y][x] = val
-        route[y][x] =  f" {r[lastdir]}{counting} {val:03}"
-    else:
-        if val >= grid[y][x]:
-            return
-
-    #print(x, y, val)
-
-    for direction in range(4):
-        if direction == lastdir:
-            dircnt = counting + 1
-        else:
-            dircnt = 0
-        i = dirs[direction]
-        x2, y2 = i
-        if y2 >= 0 and x2 >= 0 and x2 < len(grid[0]) and y2 < len(grid):
-            # if maze[y2][x2] < val:
-            if path < 1e5:
-                calc(i, val, direction, dircnt)
-
-
-start = (0, 0)
-grid = empty
-maze[0][0] = 0
-calc(start, 0, 0, 0)
-
-s = ""
-for line in route:
-    for c in line:
-        s +=c# f" {c:03}"
-    s += "\n"
-print(s)
-print(grid[end[1]][end[0]] - maze[start[1]][start[0]])
+newpos = [(0, 0, 0, 0, 0, "")]  # start
+w = len(maze[0]) - 1  # heighest width
+h = len(maze) - 1
+t = (w, h)
+found = False
+for step in range(300):
+    pos = newpos[:]
+    newpos = []
+    # print(pos)
+    pos = sorted(set(pos),
+                 key=lambda tup: (w - tup[0])*3 + (h - tup[1])*4 + (tup[2])*9)  # sort by remaining distance and points
+    for px, py, v, c, qc, l in pos[:100000]:
+        for q in range(4):
+            m = moves[q]
+            nx = px + m[0]
+            ny = py + m[1]
+            if nx == t[0] and ny == t[1]:
+                print(f"found in step {step + 1},v={v},{l}!")
+                found = True
+                break
+            if nx >= 0 and nx <= w and ny >= 0 and ny <= h:
+                nv = maze[ny][nx] + v
+                if qc < 2 and q != (c + 2) % 4:
+                    g = copy.deepcopy(l)
+                    eee = ["N", "E", "S", "W"]
+                    g += eee[q]
+                    if q == c:
+                        newpos.append((nx, ny, nv, q, qc + 1, g))
+                    else:
+                        newpos.append((nx, ny, nv, q, 0, g))
+    if found:
+        print("Found!!!11")
+        break
+print("end")
+# print(pos)
+# for i in empty:
+#    print(i)
