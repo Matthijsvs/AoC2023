@@ -142,7 +142,7 @@ t = """2113323131141431334343242222114345114241343454134136566542312454232164344
 332312332222443434241132515152122341335533226461126526512545145464625526451521662623433245422136461122541141154353214153521223312144341333322
 323133213424312311241324224511441433415211233531156215452452353635353165434233223513541552216241435245242413453131315554233444141232133243323"""
 
-t = """2413432311323
+t2 = """2413432311323
 3215453535623
 3255245654254
 3446585845452
@@ -174,39 +174,51 @@ STAY = (0, 0)
 moves = [N, E, S, W]
 
 newpos = [(0, 0, 0, 0, 0, "")]  # start
-w = len(maze[0]) - 1  # heighest width
+w = len(maze[0]) - 1  # highest width
 h = len(maze) - 1
-t = (w, h)
 found = False
-for step in range(300):
+for step in range(800):
     pos = newpos[:]
     newpos = []
     # print(pos)
     pos = sorted(set(pos),
-                 key=lambda tup: (w - tup[0])*3 + (h - tup[1])*4 + (tup[2])*9)  # sort by remaining distance and points
-    for px, py, v, c, qc, l in pos[:100000]:
+                 key=lambda tup: (w - tup[0])*1 + (h - tup[1])*1 + (tup[2])*5+(tup[4])*1)  # sort by remaining distance and points
+    for px, py, v, c, qc, l in pos[:1000]:
         for q in range(4):
             m = moves[q]
             nx = px + m[0]
             ny = py + m[1]
-            if nx == t[0] and ny == t[1]:
-                print(f"found in step {step + 1},v={v},{l}!")
+            if nx == w and ny == h and qc<2:
+                nv = maze[ny][nx] + v
+                print(f"found {step}, {nx},{ny},v={nv},{l}! from {q}")
+                res = (nx, ny, nv, q, c, l+str(q))
                 found = True
                 break
-            if nx >= 0 and nx <= w and ny >= 0 and ny <= h:
+            if 0 <= nx <= w and 0 <= ny <= h:
                 nv = maze[ny][nx] + v
-                if qc < 2 and q != (c + 2) % 4:
+                if qc < 3 and q != (c + 2) % 4:
                     g = copy.deepcopy(l)
-                    eee = ["N", "E", "S", "W"]
-                    g += eee[q]
+
+                    g += str(q)
                     if q == c:
                         newpos.append((nx, ny, nv, q, qc + 1, g))
                     else:
                         newpos.append((nx, ny, nv, q, 0, g))
     if found:
         print("Found!!!11")
+        maz = copy.deepcopy(maze)
+        x=y=0
+        print(res)
+        for i in res[5]:
+            a,b = moves[int(i)]
+            eee = ["^", ">", "v", "<"]
+            x+=a
+            y+=b
+            maz[y][x]=eee[int(i)]
+        print()
+        for y in range(w+1):
+            for x in range(h+1):
+                print(maz[y][x],end='')
+            print()
+        print("end")
         break
-print("end")
-# print(pos)
-# for i in empty:
-#    print(i)
