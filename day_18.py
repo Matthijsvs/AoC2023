@@ -1,6 +1,6 @@
 from PIL import Image, ImageDraw
 
-inp = """R 6 (#70c710)
+sample = """R 6 (#70c710)
 D 5 (#0dc571)
 L 2 (#5713f0)
 D 2 (#d2c081)
@@ -638,33 +638,75 @@ L 9 (#5dfdf2)
 U 7 (#4a3e01)
 L 3 (#5fd8a2)
 U 6 (#54d6b3)"""
-directions = {"R":(1, 0),  # 0 east
-              "D":(0, 1),  # 1 south
-              "L":(-1, 0),  # 2 west
-              "U":(0, -1)}  # 3 north
+directions = {"R": (1, 0),  # 0 east
+              "D": (0, 1),  # 1 south
+              "L": (-1, 0),  # 2 west
+              "U": (0, -1)}  # 3 north
 
-x = 400
-y =400
-sum_a=0
+from dataclasses import dataclass
 
-with Image.new("RGBA", (800, 800), (255, 255, 255, 255)) as im:
-    imageSizeW, imageSizeH = im.size
+@dataclass
+class LineSegment:
+    x1: int
+    y1: int
+    x2: int
+    y2: int
+    dir:int
+    def length(self):
+        return abs(self.x1 - self.x2) + abs(self.y2 - self.y1)
+    def product(self):
+        return (self.x1 * self.y2) - (self.x2 * self.y1)
 
-    for i in inp.splitlines():
-        dir,l,col = i.split()
-        for i in range(int(l)):
-            im.putpixel((x, y), (255, 0, 0, 255))
-            x+=directions[dir][0]
-            y+=directions[dir][1]
 
-    ImageDraw.floodfill(im, (401, 401), (0, 255, 0, 255), thresh=50)
-    nonWhitePixels=[]
-    for i in range(0, imageSizeW):
-        for j in range(0, imageSizeH):
-            pixVal = im.getpixel((i, j))
-            if pixVal[2] == 0 :
-                im.putpixel((i, j),(0, 0, 255, 255))
-                nonWhitePixels.append([i, j])
-sum_a=len(nonWhitePixels)
-im.save("day18.png", "PNG")
-print("part A:", sum_a)
+
+
+linelist = []
+def area(vertices):
+    n = len(vertices) # of corners
+    a = b = 0
+    for i in range(n):
+        j = (i + 1) % n
+        a += vertices[i].product()
+        b += vertices[i].length()
+
+    result = (a + b) // 2 + 1
+    return result
+
+
+
+directions = {"R": (1, 0),  # 0 east
+              "D": (0, 1),  # 1 south
+              "L": (-1, 0),  # 2 west
+              "U": (0, -1)}  # 3 north
+x=y=1
+for i in inp.splitlines():
+    dir, l, _ = i.split()
+    l=int(l)
+    oldx = x
+    oldy = y
+    x+=directions[dir][0]*l
+    y+=directions[dir][1]*l
+    q = LineSegment(oldx, oldy, x, y, dir)
+    linelist.append(q)
+
+print(area(linelist))
+
+directions = [(1, 0),  # 0 east
+              (0, 1),  # 1 south
+              (-1, 0),  # 2 west
+              (0, -1)]  # 3 north
+x=y=0
+linelist=[]
+for i in inp.splitlines():
+    dir, l, col = i.split()
+    l = int(l)
+    h = int(col.strip("()#"), 16)
+    l = h // 16
+    dir = h % 16
+    oldx = x
+    oldy = y
+    x += directions[dir][0] * l
+    y += directions[dir][1] * l
+    q = LineSegment(oldx, oldy, x, y, dir)
+    linelist.append(q)
+print(area(linelist))
